@@ -122,9 +122,7 @@ void test_delayMicroseconds()
 	for (i = 0; i < 10; ++i)
 	{
 		digitalWrite(pin, HIGH);
-		delayMicroseconds(1);
 		digitalWrite(pin, LOW);
-		delayMicroseconds(1);
 	}
 
 	// pulses with 1us delay (expected ~3us in analyzer)
