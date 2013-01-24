@@ -1,0 +1,10 @@
+# Set STAGING_DIR to your cross compile toolchain.
+STAGING_DIR=/home/dave/carambola/staging_dir/toolchain-mipsel_r2_gcc-4.7-linaro_uClibc-0.9.33.2
+
+
+CC=$(STAGING_DIR)/bin/mipsel-openwrt-linux-uclibc-gcc
+CXX=$(STAGING_DIR)/bin/mipsel-openwrt-linux-uclibc-g++
+LD=$(STAGING_DIR)/bin/mipsel-openwrt-linux-uclibc-ld
+CFLAGS=-Wall -I$(STAGING_DIR)/include
+CXXFLAGS=-Wall -I$(STAGING_DIR)/include
+LDFLAGS=-L$(STAGING_DIR)/lib
