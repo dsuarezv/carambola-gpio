@@ -10,6 +10,12 @@ I made this library to reuse some of the code from existing Arduino libraries (m
 The available API is very basic, mainly the functions I needed for a couple of DHT22 temperature sensors, but it is fast. I've measured pulses to 100ns (~6.666MHz).
 
 
+Compiling
+---------
+
+Follow the instructions in the Carambola Wiki to get a cross-compile environment set up. There is a Makefile.dave file that defines the cross-compile tool chain. Modify the STAGING_DIR variable defined there to your toolchain installation (you can use the existing value as a hint). Typing 'make' should get you no errors or warnings and a 'testgpio' executable ready to be deployed in the Carambola. The library is compiled to libgpio.o.
+
+
 Using the library
 -----------------
 
