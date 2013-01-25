@@ -7,7 +7,5 @@
 
 #include "libgpio.h"
 
-typedef uint16_t word;
-
 
 #endif

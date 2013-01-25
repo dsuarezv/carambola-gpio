@@ -45,6 +45,17 @@ extern "C" {
 #define ALL_GPIOS 0xFFFFFF
 
 
+// __ Types ___________________________________________________________________
+
+
+typedef uint8_t boolean;
+typedef uint8_t byte;
+typedef uint16_t word;
+
+
+// __ Registers _______________________________________________________________
+
+
 /*
  * Direct access to the GPIO data and dir registers
  */
