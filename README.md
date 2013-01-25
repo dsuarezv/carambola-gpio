@@ -7,7 +7,7 @@ The Carambola is a nice board that runs a linux distribution on top of MIPS CPU 
 
 I made this library to reuse some of the code from existing Arduino libraries (mainly temperature sensors) and because I found no fast enough GPIO handling samples on the web. 
 
-The available API is very basic, mainly the functions I needed for a couple of DHT22 temperature sensors, but it is fast. I've measured pulses to 100ns (~6.666MHz).
+The available API is very basic, mainly the functions I needed for a couple of DHT22 temperature sensors, but it is fast. I've measured pulses to around 100ns.
 
 
 Compiling
@@ -28,12 +28,6 @@ Before you can use the gpio functions, call
 on your program. This maps the GPIO registers to the process memory and the fun begins. 
 
 You can now call sbi/cbi, digitalRead/digitalWrite/pinMode or use the PORT pointer to directly write the GPIO register.
-
-
-Arduino differences 
--------------------
-
-The main difference is the PORTx pointers. Arduino has 8 bits pointers PORTA, PORTB, PORTC... to directly access the pins through bitmasks. In the carambola, a single 32 bit register access the first 24 GPIOs, so I haven't created PORTA, PORTB, etc. but instead defined a PORT pointer that addresses the first 24 GPIO pins. On Carambola, only GPIOs 1 through 14 have headers. DPP controls the pin directions in the same way. 
 
 
 Configuring Carambola GPIO
