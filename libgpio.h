@@ -97,8 +97,8 @@ uint32_t 	gpio_get();
 
 
 // pins_arduino.h
-uint32_t *digitalPinToPort(uint8_t pin);
-uint32_t digitalPinToBitMask(uint8_t pin);
+uint8_t digitalPinToPort(uint8_t pin);
+uint8_t digitalPinToBitMask(uint8_t pin);
 uint8_t *portModeRegister(uint8_t port);
 uint8_t *portInputRegister(uint8_t port);
 

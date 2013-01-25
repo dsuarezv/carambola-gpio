@@ -210,14 +210,15 @@ inline uint32_t gpio_get()
 // __ Arduino compatible API __________________________________________________
 
 
-uint32_t *digitalPinToPort(uint8_t pin)
+uint8_t digitalPinToPort(uint8_t pin)
 {
-	return PORT;
+	return pin / 8;
 }
 
-uint32_t digitalPinToBitMask(uint8_t pin)
+uint8_t digitalPinToBitMask(uint8_t pin)
 {
-	return 1 << pin;
+	uint8_t shift = pin % 8;
+	return 1 << shift;
 }
 
 uint8_t *portModeRegister(uint8_t port)
