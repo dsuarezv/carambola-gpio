@@ -155,6 +155,38 @@ void test_delayMicroseconds2(unsigned int microSeconds)
 	printf("Time: %luus\n", t2 - t1);
 }
 
+void test_pinToPort()
+{
+	gpio_setdir(ALL_GPIOS);
+
+	int i;
+	uint32_t port = (uint32_t)PORT;
+
+	for (i = 0; i < 24; ++i)
+	{
+		uint8_t portIndex = digitalPinToPort(i);
+		uint8_t *a = portModeRegister(portIndex);
+		uint8_t portMask = digitalPinToBitMask(i);
+
+		//printf("PORT: %0lX, Pin%d: %0lX  Mask:%0X\n", PORT, i, a, portMask);
+
+		uint8_t targetPort = i / 8;
+		uint32_t portAddress = (uint32_t)a;
+
+		if (targetPort != (portAddress - port)) printf("Error on pin %d\n", i);
+
+		uint8_t targetMask = 1 << (i % 8);
+
+		if (portMask != targetMask) printf("Error on mask for pin %d\n", i);
+	}
+
+	// pulse pin 10
+	for (i = 0; i < 10; ++i)
+	{
+		*PORTB = digitalPinToBitMask(10);
+		*PORTB = 0;
+	}
+}
 
 
 int main(int argc, char *argv[])
@@ -174,8 +206,9 @@ int main(int argc, char *argv[])
 	//test_digitalWrite();
 	//test_digitalRead();
 	//test_delay();
-	test_delayMicroseconds();
+	//test_delayMicroseconds();
 	//test_delayMicroseconds2(atoi(argv[1]));
+	test_pinToPort();
 	
 	// Cleanup GPIO library
 	gpio_dispose();
