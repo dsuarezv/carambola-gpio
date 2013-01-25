@@ -45,7 +45,9 @@ extern "C" {
 #define ALL_GPIOS 0xFFFFFF
 
 
-// __ Types ___________________________________________________________________
+// __ Arduino types and defines _______________________________________________
+
+#define __AVR__ 1
 
 
 typedef uint8_t boolean;
@@ -60,7 +62,14 @@ typedef uint16_t word;
  * Direct access to the GPIO data and dir registers
  */
 extern uint32_t *PORT;
+extern uint8_t  *PORTA;
+extern uint8_t  *PORTB;
+extern uint8_t  *PORTC;
+
 extern uint32_t *DPP;
+extern uint8_t  *DPPA;
+extern uint8_t  *DPPB;
+extern uint8_t  *DPPC;
 
 
 // __ API _____________________________________________________________________
@@ -87,22 +96,40 @@ uint32_t 	gpio_get();
 #define INPUT 0
 
 
-void cbi(uint32_t *addr, uint32_t bitmask);
-void sbi(uint32_t *addr, uint32_t bitmask);
+// pins_arduino.h
 uint32_t *digitalPinToPort(uint8_t pin);
 uint32_t digitalPinToBitMask(uint8_t pin);
+uint8_t *portModeRegister(uint8_t port);
+uint8_t *portInputRegister(uint8_t port);
+
+
+// wiring_private.h
+void cbi(uint32_t *addr, uint32_t bitmask);
+void sbi(uint32_t *addr, uint32_t bitmask);
+
+
+//
+void cli();
+void sei();
+
+
+// wiring.h
 void pinMode(uint8_t pin, uint8_t mode);
 void digitalWrite(uint8_t pin, uint8_t value);
 uint8_t digitalRead(uint8_t pin);
 void delayMicroseconds(unsigned int delayMicroseconds);
 void delay(unsigned int ms);
-void cli();
-void sei();
 unsigned long millis();
 unsigned long micros();
 
+#define interrupts() sei()
+#define noInterrupts() cli()
+
+
+//
 #define pulse_high(reg, bitmask) sbi(reg, bitmask); cbi(reg, bitmask);
 #define pulse_low(reg, bitmask) cbi(reg, bitmask); sbi(reg, bitmask);
+
 
 
 #ifdef __cplusplus

@@ -29,9 +29,24 @@
  * Direct access to the GPIO data and dir registers
  */
 uint32_t *PORT;
+uint8_t  *PORTA;
+uint8_t  *PORTB;
+uint8_t  *PORTC;
+
 uint32_t *DPP;
+uint8_t  *DPPA;
+uint8_t  *DPPB;
+uint8_t  *DPPC;
+
+uint8_t  *PORTS[] = { NULL, NULL, NULL };
+uint8_t  *DPPS[] = { NULL, NULL, NULL};
+
+#define MAX_ARDUINO_PORTS 3
 
 
+/*
+ * Mapped memory for register access
+ */
 struct mem_map
 {
 	unsigned long base_address;
@@ -85,7 +100,6 @@ static void init_gpio_map()
 {
 	memset(&gpio_mem, 0, sizeof(gpio_mem));
 
-
     int npages = 0;
     int pagesize = getpagesize();
 
@@ -97,6 +111,33 @@ static void init_gpio_map()
     gpio_mem.mapped_size = npages * pagesize;
 
     //debug("[Base: %0lX, offset: %0lX, size: %i, pagesize: %i]\n", gpio_mem.base_address, gpio_mem.mapped_offset, gpio_mem.mapped_size, pagesize);
+}
+
+static void init_arduino_ports()
+{
+	uint32_t data = (uint32_t)gpio_mem.mapped_memory + gpio_mem.mapped_offset + GPIO_24_DATA_OFFSET;
+	uint32_t dir = (uint32_t)gpio_mem.mapped_memory + gpio_mem.mapped_offset + GPIO_24_DIR_OFFSET;
+
+	PORT = (uint32_t *)data;
+	DPP = (uint32_t *)dir;
+
+	//debug("MMAP: PORT=%0lX, DPP=%0lX\n", PORT, DPP);
+
+	PORTA = (uint8_t *)(data);
+	PORTB = (uint8_t *)(data + 1);
+	PORTC = (uint8_t *)(data + 2);
+
+	DPPA = (uint8_t *)(dir);
+	DPPB = (uint8_t *)(dir + 1);
+	DPPC = (uint8_t *)(dir + 2);
+
+	PORTS[0] = PORTA;
+	PORTS[1] = PORTB;
+	PORTS[2] = PORTC;
+
+	DPPS[0] = DPPA;
+	DPPS[1] = DPPB;
+	DPPS[2] = DPPC;
 }
 
 
@@ -130,11 +171,7 @@ void gpio_init()
 		die("mmap failed for %0lX\n", gpio_mem.base_address);
 
 	//debug("MMAP: %0lX mapped to: %0lX\n", gpio_mem.base_address, gpio_mem.mapped_memory);
-
-	PORT = gpio_mem.mapped_memory + gpio_mem.mapped_offset + GPIO_24_DATA_OFFSET;
-	DPP = gpio_mem.mapped_memory + gpio_mem.mapped_offset + GPIO_24_DIR_OFFSET;
-
-	//debug("MMAP: PORT=%0lX, DPP=%0lX\n", PORT, DPP);
+	init_arduino_ports();
 
 	close(iofd);
 }
@@ -182,6 +219,22 @@ uint32_t digitalPinToBitMask(uint8_t pin)
 {
 	return 1 << pin;
 }
+
+uint8_t *portModeRegister(uint8_t port)
+{
+	if (port >= MAX_ARDUINO_PORTS) return NULL;
+
+	return PORTS[port];
+}
+
+uint8_t *portInputRegister(uint8_t port)
+{
+	if (port >= MAX_ARDUINO_PORTS) return NULL;
+
+	return DPPS[port];
+}
+
+
 
 void cbi(uint32_t *addr, uint32_t bitmask)
 {
