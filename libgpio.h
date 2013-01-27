@@ -62,14 +62,7 @@ typedef uint16_t word;
  * Direct access to the GPIO data and dir registers
  */
 extern volatile uint32_t *PORT;
-extern volatile uint8_t  *PORTA;
-extern volatile uint8_t  *PORTB;
-extern volatile uint8_t  *PORTC;
-
 extern volatile uint32_t *DPP;
-extern volatile uint8_t  *DPPA;
-extern volatile uint8_t  *DPPB;
-extern volatile uint8_t  *DPPC;
 
 
 // __ API _____________________________________________________________________
@@ -98,14 +91,14 @@ uint32_t 	gpio_get();
 
 // pins_arduino.h
 uint8_t digitalPinToPort(uint8_t pin);
-uint8_t digitalPinToBitMask(uint8_t pin);
-volatile uint8_t *portModeRegister(uint8_t port);
-volatile uint8_t *portInputRegister(uint8_t port);
+uint32_t digitalPinToBitMask(uint8_t pin);
+volatile uint32_t *portModeRegister(uint8_t port);
+volatile uint32_t *portInputRegister(uint8_t port);
 
 
 // wiring_private.h
-void cbi(volatile uint8_t *addr, uint8_t bitmask);
-void sbi(volatile uint8_t *addr, uint8_t bitmask);
+void cbi(volatile uint32_t *addr, uint32_t bitmask);
+void sbi(volatile uint32_t *addr, uint32_t bitmask);
 
 
 //

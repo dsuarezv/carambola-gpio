@@ -29,19 +29,7 @@
  * Direct access to the GPIO data and dir registers
  */
 volatile uint32_t *PORT;
-volatile uint8_t  *PORTA;
-volatile uint8_t  *PORTB;
-volatile uint8_t  *PORTC;
-
 volatile uint32_t *DPP;
-volatile uint8_t  *DPPA;
-volatile uint8_t  *DPPB;
-volatile uint8_t  *DPPC;
-
-volatile uint8_t  *PORTS[] = { NULL, NULL, NULL };
-volatile uint8_t  *DPPS[] = { NULL, NULL, NULL};
-
-#define MAX_ARDUINO_PORTS 3
 
 
 /*
@@ -108,22 +96,6 @@ static void init_arduino_ports()
 	DPP = (uint32_t *)dir;
 
 	//debug("MMAP: PORT=%0lX, DPP=%0lX\n", PORT, DPP);
-
-	PORTA = (uint8_t *)(data);
-	PORTB = (uint8_t *)(data + 1);
-	PORTC = (uint8_t *)(data + 2);
-
-	DPPA = (uint8_t *)(dir);
-	DPPB = (uint8_t *)(dir + 1);
-	DPPC = (uint8_t *)(dir + 2);
-
-	PORTS[0] = PORTA;
-	PORTS[1] = PORTB;
-	PORTS[2] = PORTC;
-
-	DPPS[0] = DPPA;
-	DPPS[1] = DPPB;
-	DPPS[2] = DPPC;
 }
 
 
@@ -198,37 +170,32 @@ inline uint32_t gpio_get()
 
 uint8_t digitalPinToPort(uint8_t pin)
 {
-	return pin / 8;
+	return 0;
 }
 
-uint8_t digitalPinToBitMask(uint8_t pin)
+uint32_t digitalPinToBitMask(uint8_t pin)
 {
-	uint8_t shift = pin % 8;
-	return 1 << shift;
+	return 1 << pin;
 }
 
-volatile uint8_t *portModeRegister(uint8_t port)
+volatile uint32_t *portModeRegister(uint8_t port)
 {
-	if (port >= MAX_ARDUINO_PORTS) return NULL;
-
-	return DPPS[port];
+	return DPP;
 }
 
-volatile uint8_t *portInputRegister(uint8_t port)
+volatile uint32_t *portInputRegister(uint8_t port)
 {
-	if (port >= MAX_ARDUINO_PORTS) return NULL;
-
-	return PORTS[port];
+	return PORT;
 }
 
 
 
-void cbi(volatile uint8_t *addr, uint8_t bitmask)
+void cbi(volatile uint32_t *addr, uint32_t bitmask)
 {
 	*addr &= ~bitmask;
 }
 
-void sbi(volatile uint8_t *addr, uint8_t bitmask)
+void sbi(volatile uint32_t *addr, uint32_t bitmask)
 {
 	*addr |= bitmask;
 }

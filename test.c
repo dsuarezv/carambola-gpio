@@ -33,12 +33,12 @@ void test_cbi_sti()
 	// 10 pulses on GPIO10 using cbi / sti
 
 	int i;
-	uint8_t bitmask = digitalPinToBitMask(10);
+	uint32_t bitmask = digitalPinToBitMask(10);
 
 	for (i = 0; i < 10; ++i)
 	{
-		sbi(PORTB, bitmask);
-		cbi(PORTB, bitmask);
+		sbi(PORT, bitmask);
+		cbi(PORT, bitmask);
 	}
 }
 
@@ -161,53 +161,22 @@ void test_pinToPort()
 	gpio_setdir(ALL_GPIOS);
 
 	int i;
-	uint32_t port = (uint32_t)PORT;
-
-	for (i = 0; i < 24; ++i)
-	{
-		uint8_t portIndex = digitalPinToPort(i);
-		volatile uint8_t *a = portInputRegister(portIndex);
-		uint8_t portMask = digitalPinToBitMask(i);
-
-		//printf("PORT: %0lX, Pin%d: %0lX  Mask:%0X\n", PORT, i, a, portMask);
-
-		uint8_t targetPort = i / 8;
-		uint32_t portAddress = (uint32_t)a;
-
-		if (targetPort != (portAddress - port)) printf("Error on pin %d\n", i);
-
-		uint8_t targetMask = 1 << (i % 8);
-
-		if (portMask != targetMask) printf("Error on mask for pin %d\n", i);
-	}
-
-	// pulse pin 10 using PORTB pointer
-	printf("__ Using PORTB __________________________________________\n");
-	*PORT = 0; printf("PORT: %0X\n", *PORT);
-
-	for (i = 0; i < 10; ++i)
-	{
-		*PORTB = digitalPinToBitMask(10);
-		*PORTA = digitalPinToBitMask(2);
-		printf("PORT: %0X PORTB: %0X\n", *PORT, *PORTB);
-		*PORTB = 0x00;
-		printf("PORT: %0X PORTB: %0X PORTA: %0X\n", *PORT, *PORTB, *PORTA);
-	}
 	
+	// pulse pin 10 using PORT pointer	
 	printf("__ Using PORT ___________________________________________\n");
 	*PORT = 0; printf("PORT: %0X\n", *PORT);
 	
 	for (i = 0; i < 10; ++i)
 	{
 		*PORT = 1 << 10;
-		printf("PORT: %0X PORTB: %0X\n", *PORT, *PORTB);
+		printf("PORT: %0X\n", *PORT);
 		*PORT = 0;
-		printf("PORT: %0X PORTB: %0X\n", *PORT, *PORTB);
+		printf("PORT: %0X\n", *PORT);
 	}
 
 	// pulse pin 10 using portInputRegister
-	volatile uint8_t *pin10port = portInputRegister(digitalPinToPort(10));
-	uint8_t pin10mask = digitalPinToBitMask(10);
+	volatile uint32_t *pin10port = portInputRegister(digitalPinToPort(10));
+	uint32_t pin10mask = digitalPinToBitMask(10);
 	
 	printf("__ Using portInputRegister ______________________________\n");
 	*PORT = 0; printf("PORT: %0X\n", *PORT);
