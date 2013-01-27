@@ -28,18 +28,18 @@
 /*
  * Direct access to the GPIO data and dir registers
  */
-uint32_t *PORT;
-uint8_t  *PORTA;
-uint8_t  *PORTB;
-uint8_t  *PORTC;
+volatile uint32_t *PORT;
+volatile uint8_t  *PORTA;
+volatile uint8_t  *PORTB;
+volatile uint8_t  *PORTC;
 
-uint32_t *DPP;
-uint8_t  *DPPA;
-uint8_t  *DPPB;
-uint8_t  *DPPC;
+volatile uint32_t *DPP;
+volatile uint8_t  *DPPA;
+volatile uint8_t  *DPPB;
+volatile uint8_t  *DPPC;
 
-uint8_t  *PORTS[] = { NULL, NULL, NULL };
-uint8_t  *DPPS[] = { NULL, NULL, NULL};
+volatile uint8_t  *PORTS[] = { NULL, NULL, NULL };
+volatile uint8_t  *DPPS[] = { NULL, NULL, NULL};
 
 #define MAX_ARDUINO_PORTS 3
 
@@ -80,20 +80,6 @@ static void die(char *msg, ...)
     va_end(argptr);
 	exit(1);
 }
-
-
-static inline uint32_t readptr(void *ptr)
-{
-	uint32_t *data = ptr;
-	return *data;
-}
-
-static inline void writeptr(void *ptr, uint32_t value)
-{
-	uint32_t *data = ptr;
-	*data = value;
-}
-
 
 
 static void init_gpio_map()
@@ -221,28 +207,28 @@ uint8_t digitalPinToBitMask(uint8_t pin)
 	return 1 << shift;
 }
 
-uint8_t *portModeRegister(uint8_t port)
-{
-	if (port >= MAX_ARDUINO_PORTS) return NULL;
-
-	return PORTS[port];
-}
-
-uint8_t *portInputRegister(uint8_t port)
+volatile uint8_t *portModeRegister(uint8_t port)
 {
 	if (port >= MAX_ARDUINO_PORTS) return NULL;
 
 	return DPPS[port];
 }
 
+volatile uint8_t *portInputRegister(uint8_t port)
+{
+	if (port >= MAX_ARDUINO_PORTS) return NULL;
+
+	return PORTS[port];
+}
 
 
-void cbi(uint32_t *addr, uint32_t bitmask)
+
+void cbi(volatile uint8_t *addr, uint8_t bitmask)
 {
 	*addr &= ~bitmask;
 }
 
-void sbi(uint32_t *addr, uint32_t bitmask)
+void sbi(volatile uint8_t *addr, uint8_t bitmask)
 {
 	*addr |= bitmask;
 }

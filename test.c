@@ -30,14 +30,15 @@ void test_gpio_set()
 
 void test_cbi_sti()
 {
-	// 10 pulses on all GPIO lines using cbi / sti
+	// 10 pulses on GPIO10 using cbi / sti
 
 	int i;
+	uint8_t bitmask = digitalPinToBitMask(10);
 
 	for (i = 0; i < 10; ++i)
 	{
-		sbi(PORT, ALL_GPIOS);
-		cbi(PORT, ALL_GPIOS);
+		sbi(PORTB, bitmask);
+		cbi(PORTB, bitmask);
 	}
 }
 
@@ -165,7 +166,7 @@ void test_pinToPort()
 	for (i = 0; i < 24; ++i)
 	{
 		uint8_t portIndex = digitalPinToPort(i);
-		uint8_t *a = portModeRegister(portIndex);
+		volatile uint8_t *a = portInputRegister(portIndex);
 		uint8_t portMask = digitalPinToBitMask(i);
 
 		//printf("PORT: %0lX, Pin%d: %0lX  Mask:%0X\n", PORT, i, a, portMask);
@@ -180,11 +181,43 @@ void test_pinToPort()
 		if (portMask != targetMask) printf("Error on mask for pin %d\n", i);
 	}
 
-	// pulse pin 10
+	// pulse pin 10 using PORTB pointer
+	printf("__ Using PORTB __________________________________________\n");
+	*PORT = 0; printf("PORT: %0X\n", *PORT);
+
 	for (i = 0; i < 10; ++i)
 	{
 		*PORTB = digitalPinToBitMask(10);
-		*PORTB = 0;
+		*PORTA = digitalPinToBitMask(2);
+		printf("PORT: %0X PORTB: %0X\n", *PORT, *PORTB);
+		*PORTB = 0x00;
+		printf("PORT: %0X PORTB: %0X PORTA: %0X\n", *PORT, *PORTB, *PORTA);
+	}
+	
+	printf("__ Using PORT ___________________________________________\n");
+	*PORT = 0; printf("PORT: %0X\n", *PORT);
+	
+	for (i = 0; i < 10; ++i)
+	{
+		*PORT = 1 << 10;
+		printf("PORT: %0X PORTB: %0X\n", *PORT, *PORTB);
+		*PORT = 0;
+		printf("PORT: %0X PORTB: %0X\n", *PORT, *PORTB);
+	}
+
+	// pulse pin 10 using portInputRegister
+	volatile uint8_t *pin10port = portInputRegister(digitalPinToPort(10));
+	uint8_t pin10mask = digitalPinToBitMask(10);
+	
+	printf("__ Using portInputRegister ______________________________\n");
+	*PORT = 0; printf("PORT: %0X\n", *PORT);
+
+	for (i = 0; i < 10; ++i)
+	{
+		*pin10port = pin10mask;
+		printf("PORT: %0X, val: %0X\n", *PORT, *pin10port);
+		*pin10port = 0;
+		printf("PORT: %0X, val: %0X\n", *PORT, *pin10port);
 	}
 }
 
